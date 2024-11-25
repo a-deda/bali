@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bali Reisplanner</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        .location-popup {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialiseer de kaart
+        var map = L.map('map').setView([-8.409518, 115.188919], 9);
+
+        // Voeg de OpenStreetMap tiles toe
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Locaties en beschrijvingen
+        var locations = [
+            {
+                name: "Kuta",
+                coords: [-8.722180, 115.173008],
+                description: "Kuta is een drukke badplaats bekend om surfen, nachtleven en winkelmogelijkheden. Toeristisch en energiek.\n\nActiviteiten:\n- Strandactiviteiten: Zwemmen, surfen, strandwandeling.\n- Nachtleven: Clubs zoals Sky Garden, Bounty Club, Hard Rock Cafe.\n- Winkelen: Kuta Art Market, Beachwalk Shopping Center, lokale boetieks.\n- Waterbom Bali: Groot waterpark met spannende glijbanen.\n- Bali Sea Turtle Society: Schildpadopvang en mogelijk deelnemen aan vrijlatingen.\n- Lokale massages en spa's: Ontspannen na een dag vol activiteiten."
+            },
+            {
+                name: "Uluwatu",
+                coords: [-8.818693, 115.087866],
+                description: "Uluwatu biedt indrukwekkende kliffen, stranden en een beroemde tempel. Geweldig voor surfen en zonsondergangen.\n\nActiviteiten:\n- Bezoek Uluwatu Temple en Kecak-dansvoorstelling bij zonsondergang.\n- Stranden: Padang Padang, Nyang Nyang Beach, Suluban Beach (Blue Point).\n- Surfen: Wereldberoemde surfspots, ideaal voor gevorderde surfers.\n- Paragliden bij Timbis Beach: Geniet van panoramische uitzichten over de kliffen.\n- Ontspannen in cliffside cafés: Single Fin, Ulu Cliffhouse.\n- Garuda Wisnu Kencana Cultural Park: Bezoek het gigantische standbeeld en culturele shows."
+            },
+            {
+                name: "Nusa Lembongan",
+                coords: [-8.682502, 115.451921],
+                description: "Nusa Lembongan is een rustig eiland met mooie stranden, snorkel- en duikmogelijkheden. Ontsnap aan de drukte van Bali.\n\nActiviteiten:\n- Snorkelen bij Manta Point, Crystal Bay, Mangrove Point.\n- Devil's Tear: Spectaculair uitzicht op de golven die tegen de kliffen slaan.\n- Mangrove Forest: Kajakken of een boottocht maken door het mangrovebos.\n- Stranden: Dream Beach, Mushroom Bay, Jungut Batu Beach.\n- Bezoek Nusa Ceningan via de Yellow Bridge: Blue Lagoon en Mahana Point voor cliff jumping.\n- Duiken: Diverse duiklocaties met kleurrijk zeeleven."
+            },
+            {
+                name: "Nusa Penida",
+                coords: [-8.727846, 115.544423],
+                description: "Nusa Penida is een avontuurlijk eiland bekend om ruige natuur, prachtige stranden en indrukwekkende hikes.\n\nActiviteiten:\n- Kelingking Beach: Hike naar het beroemde 'T-Rex' strand.\n- Diamond Beach en Atuh Beach: Mooie stranden met indrukwekkende kliffen.\n- Broken Beach (Pasih Uug) en Angel's Billabong: Natuurlijke rotsformaties en infinity pools.\n- Snorkelen bij Crystal Bay, Gamat Bay, Manta Point: Zwemmen met manta's en kleurrijke vissen.\n- Peguyangan Waterfall: Trap met blauwe leuningen naar een heilige tempel en waterval.\n- Tembeling Natural Pool and Forest: Zwemmen in natuurlijke poelen in de jungle.\n- Goa Giri Putri Tempel: Ondergrondse tempel in een grote grot."
+            },
+            {
+                name: "Amed",
+                coords: [-8.343421, 115.685088],
+                description: "Amed is een rustig vissersdorpje, bekend om snorkelen, duiken en een ontspannen sfeer.\n\nActiviteiten:\n- Snorkelen en duiken: Japans scheepswrak, USAT Liberty Wrak in Tulamben, Jemeluk Bay.\n- Lempuyang Temple: Beroemd om de 'Poort naar de Hemel' en adembenemende uitzichten.\n- Vroeg vissen met lokale vissers: Ga mee met een traditionele jukung boot.\n- Vrijduiken (freediving): Populair gebied voor freediving cursussen.\n- Zonsondergang bij het strand: Geniet van een prachtige zonsondergang met uitzicht op Mount Agung."
+            },
+            {
+                name: "Ubud",
+                coords: [-8.506939, 115.262478],
+                description: "Ubud is het culturele hart van Bali met rijstterrassen, kunst, tempels en wellness. Spiritueel en creatief.\n\nActiviteiten:\n- Campuhan Ridge Walk: Schilderachtige wandeling met uitzicht op valleien.\n- Tegalalang Rijstterrassen: Iconische rijstterrassen met mogelijkheid tot wandelen.\n- Tegenungan Waterval: Mooie waterval om te zwemmen en te verkennen.\n- Monkey Forest: Ontmoet Balinese langstaartmakaken in een spirituele setting.\n- Kooklessen: Leer traditionele Balinese gerechten bereiden.\n- Kunstworkshops: Houtsnijden, schilderen, zilversmeden.\n- Yoga en meditatie: Diverse retraites zoals Yoga Barn.\n- Bezoek lokale markten: Ubud Art Market voor handwerk en souvenirs."
+            },
+            {
+                name: "Munduk",
+                coords: [-8.270546, 115.050444],
+                description: "Munduk is een bergachtig dorpje met prachtige watervallen, koele lucht en uitzichtpunten. Perfect voor hikes.\n\nActiviteiten:\n- Watervallen: Munduk, Melanting, Banyumala Twin Waterfalls, Sekumpul waterval (uitdagende hike).\n- Trektochten door koffie- en kruidnagelplantages.\n- Bezoek traditionele dorpen: Ervaar het lokale leven en leer over traditionele ambachten.\n- Ulun Danu Bratan Tempel: Drijvende tempel aan het Bratan-meer.\n- Twin Lakes: Wandelingen en uitzichten bij Tamblingan en Buyan meren."
+            },
+            {
+                name: "Canggu",
+                coords: [-8.647817, 115.138519],
+                description: "Canggu is een hippe plek aan het strand met veel surfers, trendy cafés en een bruisend nachtleven.\n\nActiviteiten:\n- Surfen: Batu Bolong Beach, Echo Beach, Berawa Beach (voor verschillende niveaus).\n- Strandclubs: Finn's, La Brisa, The Lawn.\n- Winkelen: Boetieks, concept stores, surfshops.\n- Nightlife: Old Man's, Deus Ex Machina, live muziek en DJ's.\n- Skateparks: Pretty Poison met avondoptredens.\n- Yoga en fitness: Diverse studios voor yoga, CrossFit en gyms.\n- Horseback riding: Paardrijden langs het strand."
+            },
+            {
+                name: "Seminyak",
+                coords: [-8.687037, 115.158531],
+                description: "Seminyak is een luxe bestemming met stijlvolle boetieks, strandclubs en hoogwaardige restaurants.\n\nActiviteiten:\n- Strandclubs: Potato Head, Ku De Ta, Mrs Sippy.\n- Winkelen: Designer boetieks, Seminyak Village, kunstgalerijen.\n- Nachtleven: Bars en lounges zoals La Favela, Motel Mexicola.\n- Luxe spa's en wellness: Ontspan met massages en behandelingen.\n- Culinair genieten: Hoogwaardige restaurants met fusion en internationale keukens."
+            },
+            {
+                name: "Jimbaran",
+                coords: [-8.784849, 115.155006],
+                description: "Jimbaran staat bekend om rustige stranden en heerlijke visrestaurants. Ontspan en geniet van een zonsondergang diner.\n\nActiviteiten:\n- Seafood diner op het strand: Vers gevangen vis bereid op de barbecue.\n- Kedonganan Vismarkt: Bezoek in de vroege ochtend voor verse vangst.\n- Zwemmen en zonnebaden op Jimbaran Beach en Muaya Beach.\n- Golfen: New Kuta Golf met uitzicht op zee.\n- Spa's en wellness: Luxe behandelingen met uitzicht op zee."
+            },
+            {
+                name: "Sanur",
+                coords: [-8.709331, 115.263138],
+                description: "Sanur is een rustige badplaats met een lange promenade, ideaal voor watersporten en gezinsvriendelijke activiteiten.\n\nActiviteiten:\n- Fietsen langs de promenade: Huur een fiets en geniet van het uitzicht.\n- Watersporten: Kajakken, stand-up paddleboarding, kitesurfen.\n- Nachtmarkt (Pasar Sindhu): Proef lokale streetfood.\n- Bali Seawalker Tour: Loop op de zeebodem met een speciaal helm.\n- Le Mayeur Museum: Bezoek het museum van de Belgische schilder Adrien-Jean Le Mayeur."
+            },
+            {
+                name: "Sidemen",
+                coords: [-8.463190, 115.456773],
+                description: "Sidemen is een rustig plattelandsdorp met prachtige rijstvelden en traditionele ambachten. Minder toeristisch en zeer authentiek.\n\nActiviteiten:\n- Trekking door rijstvelden en heuvels: Geniet van de natuur en traditionele dorpen.\n- Bezoek aan lokale ambachtslieden: Leer over weven en houtsnijden.\n- Raften op de Telaga Waja Rivier: Avontuurlijke activiteit door het prachtige landschap.\n- Kooklessen: Leer Balinese gerechten bereiden met verse ingrediënten."
+            },
+            {
+                name: "Bedugul",
+                coords: [-8.283913, 115.159271],
+                description: "Bedugul is een koeler berggebied met prachtige tempels, meren en botanische tuinen. Ideaal voor natuur en cultuur.\n\nActiviteiten:\n- Ulun Danu Bratan Tempel: Iconische tempel aan het Bratan-meer.\n- Botanische Tuinen (Kebun Raya Bali): Groot park met diverse plantensoorten.\n- Boottochten op het Bratan Meer: Geniet van het uitzicht vanaf het water.\n- Bali Treetop Adventure Park: Klim- en zipline parcours tussen de bomen.\n- Candi Kuning Markt: Koop verse producten en lokale snacks."
+            },
+            {
+                name: "Mount Batur",
+                coords: [-8.242792, 115.376653],
+                description: "Mount Batur is een actieve vulkaan die populair is voor sunrise hikes. Fantastische uitzichten na een vroege beklimming.\n\nActiviteiten:\n- Sunrise hike naar de top van Mount Batur: Start rond 2:00 - 3:00 uur voor zonsopgang.\n- Ontspannen bij de Batur Natural Hot Springs: Ontspan in warmwaterbronnen na de hike.\n- Koffieplantages bezoeken: Proef Luwak koffie, de bekendste koffie van Bali.\n- Bezoek Batur Geopark Museum: Leer meer over de vulkaan en geologie."
+            },
+            {
+                name: "Tanah Lot",
+                coords: [-8.621069, 115.086767],
+                description: "Tanah Lot is een iconische tempel op een rots in de zee. Beroemd om zonsondergang en prachtige uitzichten.\n\nActiviteiten:\n- Bezoek de tempel bij zonsondergang: Schitterende fotomomenten.\n- Winkelen bij de nabijgelegen marktkraampjes: Souvenirs en lokale producten.\n- Traditonele dansvoorstellingen: Geniet van culturele optredens in de buurt van de tempel."
+            }
+        ];
+
+        // Voeg markers toe aan de kaart voor elke locatie
+        locations.forEach(function(location) {
+            L.marker(location.coords).addTo(map)
+                .bindPopup(`<div class="location-popup"><strong>${location.name}</strong><br>${location.description.replace(/\n/g, '<br>')}</div>`);
+        });
+    </script>
+</body>
+</html>
